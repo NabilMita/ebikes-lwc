@@ -1,4 +1,5 @@
-import { LightningElement, wire } from 'lwc';
+import { LightningElement, wire, track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // Lightning Message Service and a message channel
 import { NavigationMixin } from 'lightning/navigation';
@@ -46,6 +47,8 @@ export default class ProductCard extends NavigationMixin(LightningElement) {
     productName;
     productPictureUrl;
 
+    orderId;
+
     /** Load context for Lightning Messaging Service */
     @wire(MessageContext) messageContext;
 
@@ -85,5 +88,68 @@ export default class ProductCard extends NavigationMixin(LightningElement) {
                 actionName: 'view'
             }
         });
+    }
+
+    @track openModal = false;
+
+    openModalHandler() {
+        this.openModal = true;
+    }
+    cancelModal() {
+        this.openModal = false;
+    }
+
+    handleOrderSuccess(event) {
+        // Creating new Record in Reseller Order (Order__c)
+        this.orderId = event.detail.id;
+        console.info('New Reseller Order created with id:' + this.orderId);
+
+        // For testing purpose I used only 1 product, but you can use more than one product & more than one order item
+        this.template
+            .querySelectorAll(
+                'lightning-input-field[data-id="resellerOrderId"]'
+            )
+            .forEach((field) => {
+                // Assigning the new created Reseller Order Id to the Order Item in each form in the modal
+                field.value = this.orderId;
+            });
+
+        this.template
+            .querySelectorAll(
+                'lightning-record-edit-form[data-id="orderItemForm"]'
+            )
+            .forEach((form) => {
+                // Creating new OrderItem record for each Order Item form
+                form.submit();
+            });
+    }
+
+    handleOrderItemSuccess() {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Order Created',
+                message: 'Order #' + this.orderId + ' created Successfully!',
+                variant: 'success'
+            })
+        );
+        this.navigateToNewResellerOrder();
+    }
+
+    navigateToNewResellerOrder() {
+        // View the new created Reseller Order
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: this.orderId,
+                actionName: 'view'
+            }
+        });
+    }
+
+    handleSave() {
+        console.info('Saving..');
+        this.template
+            .querySelector('lightning-record-edit-form[data-id="orderForm"]')
+            .submit(); // Saving the Reseller Order
     }
 }

@@ -2,6 +2,123 @@
     <lightning-card icon-name="standard:apex_plugin">
         <template if:true={recordId}>
             <span slot="title">{productName}</span>
+            <div class="slds-align_absolute-center">
+                <lightning-button
+                    variant="brand"
+                    label="New Order"
+                    onclick={openModalHandler}
+                ></lightning-button>
+            </div>
+            <!-- Modal Start -->
+            <template if:true={openModal}>
+                <section
+                    role="dialog"
+                    tabindex="-1"
+                    aria-labelledby="modal-heading-01"
+                    aria-modal="true"
+                    aria-describedby="modal-content-id-1"
+                    class="slds-modal slds-fade-in-open"
+                >
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button
+                                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close"
+                                onclick={cancelModal}
+                            >
+                                <lightning-icon
+                                    icon-name="utility:close"
+                                    alternative-text="close"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                            </button>
+                            <h2
+                                id="modal-heading-01"
+                                class="slds-text-heading_medium slds-hyphenate"
+                                if:false={isEditForm}
+                            >
+                                Create New Order
+                            </h2>
+                        </header>
+                        <div
+                            class="slds-modal__content slds-p-around_medium"
+                            id="modal-content-id-1"
+                        >
+                            <lightning-layout>
+                                <!-- Reseller Order Form -->
+                                <lightning-layout-item padding="around-small">
+                                    <lightning-record-edit-form
+                                        object-api-name="Order__c"
+                                        onsuccess={handleOrderSuccess}
+                                        data-id="orderForm"
+                                    >
+                                        <lightning-messages></lightning-messages>
+                                        <lightning-input-field
+                                            field-name="Account__c"
+                                        ></lightning-input-field>
+                                        <lightning-input-field
+                                            field-name="Status__c"
+                                            disabled
+                                        ></lightning-input-field>
+                                    </lightning-record-edit-form>
+                                    <!-- Reseller Order Form -->
+                                </lightning-layout-item>
+
+                                <lightning-layout-item padding="around-small">
+                                    <!-- Order Item Form -->
+                                    <lightning-record-edit-form
+                                        object-api-name="Order_Item__c"
+                                        onsuccess={handleOrderItemSuccess}
+                                        data-id="orderItemForm"
+                                    >
+                                        <lightning-messages></lightning-messages>
+                                        <lightning-input-field
+                                            field-name="Qty_S__c"
+                                        ></lightning-input-field>
+                                        <lightning-input-field
+                                            field-name="Qty_M__c"
+                                        ></lightning-input-field>
+                                        <lightning-input-field
+                                            field-name="Qty_L__c"
+                                        ></lightning-input-field>
+                                        <lightning-input-field
+                                            field-name="Product__c"
+                                            value={recordId}
+                                            disabled
+                                        ></lightning-input-field>
+                                        <!-- Assigning ResellerOrderID For OrderItem (using hidden field) -->
+                                        <lightning-input-field
+                                            field-name="Order__c"
+                                            data-id="resellerOrderId"
+                                            class="slds-hidden"
+                                            disabled
+                                        ></lightning-input-field>
+                                    </lightning-record-edit-form>
+                                    <!-- End Order Item Form -->
+                                </lightning-layout-item>
+                            </lightning-layout>
+                            <div class="slds-modal__footer">
+                                <button
+                                    class="slds-button slds-button_destructive"
+                                    onclick={cancelModal}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    class="slds-button slds-button_brand"
+                                    type="submit"
+                                    onclick={handleSave}
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            <!-- Modal End -->
             <lightning-button-icon
                 icon-name="utility:expand_alt"
                 slot="actions"

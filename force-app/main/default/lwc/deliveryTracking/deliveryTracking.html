@@ -1,0 +1,179 @@
+<template>
+    <lightning-card title="Delivery Orders Tracking">
+        <br />
+        <div style="overflow: scroll-hidden; height: 800px">
+            <template if:true={data}>
+                <lightning-datatable
+                    data={data}
+                    columns={columns}
+                    key-field="id"
+                    hide-checkbox-column="true"
+                    onrowaction={handleRowActions}
+                    default-sort-direction={defaultSortDirection}
+                    sorted-direction={sortDirection}
+                    sorted-by={sortedBy}
+                    onsort={onHandleSort}
+                ></lightning-datatable>
+            </template>
+        </div>
+
+        <!-- Spinner -->
+        <div if:true={showLoadingSpinner}>
+            <lightning-spinner
+                alternative-text="Loading"
+                size="large"
+            ></lightning-spinner>
+        </div>
+
+        <!-- Modal Start -->
+        <template if:true={bShowModal}>
+            <section
+                role="dialog"
+                tabindex="-1"
+                aria-labelledby="modal-heading-01"
+                aria-modal="true"
+                aria-describedby="modal-content-id-1"
+                class="slds-modal slds-fade-in-open"
+            >
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button
+                            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close"
+                            onclick={closeModal}
+                        >
+                            <lightning-icon
+                                icon-name="utility:close"
+                                alternative-text="close"
+                                variant="inverse"
+                                size="small"
+                            ></lightning-icon>
+                        </button>
+                        <h2
+                            id="modal-heading-01"
+                            class="slds-text-heading_medium slds-hyphenate"
+                            if:false={isEditForm}
+                        >
+                            Record Detail
+                        </h2>
+                        <h2
+                            id="modal-heading-02"
+                            class="slds-text-heading_medium slds-hyphenate"
+                            if:true={isEditForm}
+                        >
+                            Update Record Values
+                        </h2>
+                    </header>
+
+                    <div
+                        class="slds-modal__content slds-p-around_medium"
+                        id="modal-content-id-1"
+                        if:false={isEditForm}
+                    >
+                        <dl class="slds-list_horizontal slds-wrap">
+                            <dt class="slds-item_label slds-truncate">
+                                Order Id:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <b>{record.Id}</b>
+                            </dd>
+
+                            <dt class="slds-item_label slds-truncate">
+                                Order Number:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <b>{record.Name}</b>
+                                <hr />
+                            </dd>
+
+                            <dt class="slds-item_label slds-truncate">
+                                Account Name:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <b>{record.Account__r.Name}</b>
+                            </dd>
+
+                            <dt class="slds-item_label slds-truncate">
+                                Address:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <b>{record.Address__c}</b>
+                                <hr />
+                            </dd>
+
+                            <dt class="slds-item_label slds-truncate">
+                                Status:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <b>{record.Status__c}</b>
+                                <hr />
+                            </dd>
+
+                            <dt class="slds-item_label slds-truncate">
+                                Expected Delivery Date:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <b>{record.Delivery_Date__c}</b>
+                            </dd>
+
+                            <dt class="slds-item_label slds-truncate">
+                                Real Delivery Date:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <b>{record.Real_Delivery_Date__c}</b>
+                                <hr />
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <!-- Edit Form -->
+                    <div if:true={isEditForm} class="slds-theme_default">
+                        <lightning-record-edit-form
+                            layout-type="Full"
+                            record-id={currentRecordId}
+                            object-api-name="Order__c"
+                            onsubmit={handleSubmit}
+                            onsuccess={handleSuccess}
+                        >
+                            <lightning-messages></lightning-messages>
+                            <lightning-output-field
+                                field-name="Name"
+                            ></lightning-output-field>
+                            <lightning-input-field
+                                field-name="Delivery_Date__c"
+                                disabled
+                            ></lightning-input-field>
+                            <lightning-input-field
+                                field-name="Real_Delivery_Date__c"
+                                disabled
+                            ></lightning-input-field>
+                            <lightning-input-field
+                                field-name="Status__c"
+                            ></lightning-input-field>
+                            <div style="text-align: center">
+                                <lightning-button
+                                    class="slds-m-top_small"
+                                    variant="brand"
+                                    type="submit"
+                                    name="update"
+                                    label="Update Record"
+                                ></lightning-button>
+                            </div> </lightning-record-edit-form
+                        ><br />
+                    </div>
+
+                    <!-- Modal Footer Start-->
+                    <footer class="slds-modal__footer" if:false={isEditForm}>
+                        <lightning-button
+                            variant="brand"
+                            label="Close"
+                            title="Close"
+                            onclick={closeModal}
+                        ></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>
