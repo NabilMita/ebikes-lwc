@@ -9,3 +9,9 @@ section {
     margin-top: 0.75rem;
     text-transform: uppercase;
 }
+
+.start-date-help-text {
+    position: absolute;
+    top: 0rem;
+    left: 4.2rem;
+}

@@ -72,7 +72,6 @@
                                         onsuccess={handleOrderItemSuccess}
                                         data-id="orderItemForm"
                                     >
-                                        <lightning-messages></lightning-messages>
                                         <lightning-input-field
                                             field-name="Qty_S__c"
                                         ></lightning-input-field>
@@ -82,16 +81,21 @@
                                         <lightning-input-field
                                             field-name="Qty_L__c"
                                         ></lightning-input-field>
+
                                         <lightning-input-field
                                             field-name="Product__c"
                                             value={recordId}
                                             disabled
+                                        ></lightning-input-field>
+                                        <lightning-input-field
+                                            field-name="Price__c"
                                         ></lightning-input-field>
                                         <!-- Assigning ResellerOrderID For OrderItem (using hidden field) -->
                                         <lightning-input-field
                                             field-name="Order__c"
                                             data-id="resellerOrderId"
                                             class="slds-hidden"
+                                            variant="label-hidden"
                                             disabled
                                         ></lightning-input-field>
                                     </lightning-record-edit-form>
